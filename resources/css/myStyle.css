@@ -1,0 +1,162 @@
+@import "tailwindcss";
+@utility input{
+    @apply p-2 border-2 overflow-hidden focus:border-blue-400 focus:outline-0 border-zinc-400 rounded w-full;
+}
+label{
+    @apply mb-1 block cursor-pointer;
+}
+select> option{
+    background-color: var(--color-background);
+}
+.button{
+    --bg: var(--color-zinc-200);
+    --hover: var(--color-zinc-100);
+    --focus: var(--color-zinc-100);
+    --focus-outline: var(--color-zinc-200);
+    --text:var(--color-foreground);
+    background-color: var(--bg);
+    color: var(--text);
+    @apply cursor-pointer rounded px-2 py-1 focus:outline-2;
+}
+.button-hover-scale-down:hover{
+    scale: 0.9;
+}
+.button-hover-scale-up:hover{
+    scale: 0.9;
+}
+.button-theme{
+    @variant dark {
+        --bg: var(--color-zinc-600);
+        --hover: var(--color-zinc-500);
+        --focus: var(--color-zinc-500);
+        --focus-outline: var(--color-zinc-400);
+    }
+}
+.button:hover{
+    background-color: var(--hover);
+}
+.button:focus{
+    background-color: var(--focus);
+    outline-color: var(--focus-outline);
+}
+.button-transparent{
+    --bg: transparent;
+    --hover: transparent;
+    --focus: transparent;
+    --focus-outline: transparent;
+}
+.button-primary{
+    --bg: var(--color-blue-600);
+    --hover: var(--color-blue-700);
+    --focus: var(--color-blue-700);
+    --focus-outline: var(--color-blue-200);
+    --text:var(--color-white);
+}
+.button-danger{
+    --bg: var(--color-red-500);
+    --hover: var(--color-red-700);
+    --focus: var(--color-red-700);
+    --focus-outline: var(--color-red-200);
+    --text:var(--color-white);
+}
+.button-success{
+    --bg: var(--color-green-600);
+    --hover: var(--color-green-700);
+    --focus: var(--color-green-700);
+    --focus-outline: var(--color-green-200);
+    --text:var(--color-white);
+}
+.button-shadow{
+    @apply shadow-sm shadow-zinc-400;
+}
+@layer base{
+    h1{ @apply text-4xl font-bold; }
+    h2{ @apply text-3xl font-bold; }
+    h3{ @apply text-2xl font-bold; }
+    h4{ @apply text-xl font-bold; }
+    h5{ @apply text-lg font-bold; }
+    h6{ @apply text-base font-bold; }
+}
+@layer base{
+    table tbody{
+        @apply align-top;
+    }
+    .table-responsive{
+        overflow-x: auto;
+    }
+    .table-responsive table{
+        @apply min-w-150;
+    }
+    .table {
+        --hover-bg: #efefef;
+        @apply border-collapse;
+        @variant dark {
+            --hover-bg: #686868;
+        }
+    }
+    .table td, table th{
+        @apply py-1 px-2;
+    }
+    .table.table-hover tbody>tr:hover{
+        background-color: var( --hover-bg);
+    }
+    .table tr:not(:last-child), .table>thead>tr{
+        @apply border-b-1 border-gray-300 rounded-lg px-2;
+    }
+    .table-bordered{
+        @apply border border-gray-400;
+    }
+    .table-bordered td, .table-bordered th {
+        @apply border border-gray-400;
+    }
+}
+@layer base{
+    .sidepanel{
+        --trans-x: -105%;
+        position: fixed;
+        top: 0;
+        z-index: 100;
+        height: 100%;
+        transform: translateX( var(--trans-x) );
+        transition: transform 0.3s ease-in-out;
+    }
+    .sidepanel[data-position=start]{
+        @apply start-0;
+    }
+    .sidepanel[data-position=end]{
+        @apply end-0;
+    }
+    .sidepanel[data-visible=true]{
+        --trans-x: 0;
+    }
+}
+@layer base{
+    .overly{
+        --opacity: 0;
+        --visibility: hidden;
+        --transform: -100%;
+        opacity: var(--opacity);
+        visibility: var(--visibility);
+        transform: translateX( var(--trans-x) );
+        transition: opacity 0.3s ease-in-out, visibility 0.5s ease-in-out;
+        position: fixed;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        cursor: pointer;
+        z-index: 50;
+        @apply start-0;
+    }
+    .overly[data-visible=true]{
+        --opacity: 0.5;
+        --visibility: visible;
+        --transform: 0;
+    }
+}
+.theme-bg-1{
+    --bg: #ffffff;
+    background-color: var(--bg);
+    @variant dark {
+        --bg: #535353;
+    }
+}
