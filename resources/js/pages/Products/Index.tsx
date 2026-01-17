@@ -1,13 +1,13 @@
 import PublicLayout from '@/layouts/PublicLayout';
 import ProductCard from '@/components/ait/ProductCard';
-import { Product } from '@/types/products';
+import { ProductType } from '@/types/ait';
 import { router, useForm, usePage } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
 import Products from '@/routes/products';
 import Spinner from '@/components/ait/Spinner';
 
 type IndexProps = {
-    data?: Product[];
+    data?: ProductType[];
     meta?: {
         page?: number;
         limit?: number;
@@ -16,7 +16,7 @@ type IndexProps = {
 }
 export default function Index(){
     const page = usePage<IndexProps>()
-    const [products, setProducts] = useState<Product[]>(page.props.data || [] )
+    const [products, setProducts] = useState<ProductType[]>(page.props.data || [] )
     const [loadBtnVisible, setLoadBtnVisibility] = useState<boolean>(true)
     const [currentPage, setCurrentPage] = useState<number>(page.props.meta?.page || 1 )
     const [message, setMessage] = useState<string>('')
@@ -39,7 +39,7 @@ export default function Index(){
                     setLoading( false )
                 },
                 onSuccess: ( response ) => {
-                    const newProducts: Product[] = (response.props.data as Product[] ) || []
+                    const newProducts: ProductType[] = (response.props.data as ProductType[] ) || []
                     if( newProducts.length > 0){
                         if( currentPage === 1 )
                             setProducts( newProducts )
@@ -62,7 +62,7 @@ export default function Index(){
     return (
         <PublicLayout>
             <div className="grid p-2 grid-cols-4 gap-1 max-md:grid-cols-3 max-sm:grid-cols-2">
-                {products.map((product: Product, index: number) => {
+                {products.map((product: ProductType, index: number) => {
                     return (
                         <ProductCard
                             key={index}

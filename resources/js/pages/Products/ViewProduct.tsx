@@ -21,7 +21,7 @@ export default function viewProduct() {
             preserveScroll: true,
             data: data,
             onSuccess: (p) => {
-                setSuccess( (p.props.message as string)  || "")
+                setSuccess( (p.props.flash?.message as string)  || "")
                 setTimeout(()=>{
                     setSuccess("")
                 }, 3000)

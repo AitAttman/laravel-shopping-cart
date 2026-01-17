@@ -1,5 +1,5 @@
 import Spinner from '@/components/ait/Spinner';
-import { Product } from '@/types/products';
+import { ProductType } from '@/types/ait';
 import { JSX, useEffect, useState } from 'react';
 import { Link, router, useForm, usePage } from '@inertiajs/react';
 import CartsController from '@/actions/App/Http/Controllers/CartsController';
@@ -28,7 +28,7 @@ export default function ProductCard({id=0, thumbnailUrl="",url = '#', name="", p
     const addItem = () => {
         post( CartsController.addItem().url , {
             onSuccess : (response) => {
-                setSuccessMessage((response.props.message as string  ) ||"" )
+                setSuccessMessage((response.props.flash?.message as string  ) ||"" )
                 setTimeout(()=>setSuccessMessage(""), 3000 )
             },
             preserveScroll:true

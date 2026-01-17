@@ -18,19 +18,31 @@ use Inertia\Inertia;
 class CartsController extends Controller
 {
     public static function Routes(){
-        //TODO: add auth middleware
         Route::prefix('cart')->middleware('auth')->group(function () {
             Route::get('/', [__CLASS__, 'viewCart'])->name('cart.view');
             Route::post('/', [__CLASS__, 'addItem'])->name('cart.add_item');
             Route::DELETE('/', [__CLASS__, 'deleteItem'])->name('cart.delete_item');
+            Route::post('/checkout', [__CLASS__, 'submitCheckout'])->name('cart.checkout.submit');
+            Route::get('/test', [__CLASS__, 'testCart']);
         });
+    }
+    public function testCart( Request $request ){
+        $cart = self::getCurrentUserCart();
+        dd( $cart );
     }
     public function viewCart(Request $request){
         $cart = self::getCurrentUserCart();
+        $result = ['message' => 'There no items in your cart', 'data' => null ];
         if( $cart ) {
-            // get cart items
+            $args = [
+                'page' => ait_get_positive_int(  $request->get('page',1) ),
+                'cart_id' => $cart->id
+            ];
+            $itemsData = Cart::cartItems( ...$args );
+            if( $itemsData )
+                $result = $itemsData;
         }
-        return Inertia::render('cart/CartIndex', ['cart' => $cart]);
+        return Inertia::render('cart/CartIndex', $result );
     }
     /**
      * update or create cart item
@@ -65,7 +77,7 @@ class CartsController extends Controller
             $message = 'Item added to cart successfully';
         else
             $message = 'Item has been updated successfully';
-        return back()->with('message' , $message );
+        return back()->with('flash_message' , $message );
     }
 
     /**
@@ -81,8 +93,16 @@ class CartsController extends Controller
         if( $cartId && is_int( $productId ) && $productId > 0 )
             $cartItem = CartItem::getItem( $cartId, $productId , ['id'] );
         if( isset( $cartItem ) && $cartItem->delete())
-            return back()->with( ['message' => 'Item deleted successfully'] );
+            return back()->with( ['flash_message' => 'Item deleted successfully'] );
         return back()->withErrors( ['message' => 'Item is not the cart yet'] );
+    }
+    public function submitCheckout(Request $request){
+        $cart = self::getCurrentUserCart();
+        if( !$cart || !Cart::hasItems($cart->id) )
+            return back()->withErrors( ['message' => 'Your cart is empty'] );
+        $cart->status = CartStatus::PENDING->value;
+        $cart->save();
+        return back()->with('flash_message', 'Cart has been submitted successfully');
     }
     public static function getCurrentUserCart( array $fields = ['*']):?Cart {
         $userId = auth()->user()?->id;

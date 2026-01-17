@@ -45,10 +45,18 @@ class HandleInertiaRequests extends Middleware
                 'user' => $request->user(),
             ],
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
+            // flash key is necessary to overcome the conflict trigger my "message" key by other methods
+            // flash must be used to read response from POST|DELETE|PUT methods
+            'flash' => []
         ];
         // updated by ahmed 0n 14/01/2026
         if( $request->session()->has('message') )
-            $response['message'] = $request->session()->get('message');
+            $response['message'] = fn() => $request->session()->get('message');
+        /**
+         * flashed messages from methods like POST,DELETE,PUT must be separated from messages from 'GET' method
+         */
+        if( $request->session()->has('flash_message') )
+            $response['flash']['message'] = fn() => $request->session()->get('flash_message');
 
         return $response;
     }

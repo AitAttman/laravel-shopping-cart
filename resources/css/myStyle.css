@@ -26,7 +26,7 @@ select> option{
 }
 .button-theme{
     @variant dark {
-        --bg: var(--color-zinc-600);
+        --bg: var(--color-gray-700);
         --hover: var(--color-zinc-500);
         --focus: var(--color-zinc-500);
         --focus-outline: var(--color-zinc-400);
