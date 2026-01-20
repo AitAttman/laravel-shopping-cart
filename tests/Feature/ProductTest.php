@@ -30,10 +30,10 @@ class ProductTest extends TestCase
         ]);
         $product?->refresh();
         dump($product?->toArray());
-        $this->assertDatabaseHas('products', ['id' => $product?->id ] );
         } catch (\Throwable $th) {
             $this->fail($th->getMessage());
         }
+        $this->assertDatabaseHas('products', ['id' => $product?->id ] );
     }
     public function test_insertProducts(){
         $products = Product::factory()->count(20)->create();
