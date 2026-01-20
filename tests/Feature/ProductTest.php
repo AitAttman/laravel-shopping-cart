@@ -21,7 +21,6 @@ class ProductTest extends TestCase
     }
 
     public function test_product(): void{
-        return;
         try {
         $product = Product::create([
             'name' => "Product 4",
