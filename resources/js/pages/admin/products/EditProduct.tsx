@@ -115,6 +115,7 @@ export default function EditProduct(){
                     {page.props.errors.price_regular && <InputError message={page.props.errors.price_regular} />}
                 </div>
                 <div className="col-span-2">
+
                     <label htmlFor="status">Status</label>
                     <select id="status" name="status" className="input"
                             value={product.status ?? ""}
