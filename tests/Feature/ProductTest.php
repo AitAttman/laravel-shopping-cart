@@ -24,7 +24,7 @@ class ProductTest extends TestCase
         try {
         $product = Product::create([
             'name' => "Product 4",
-            'slug' => Str::slug("Lorem ipsum dolor sit amet"),
+            'slug' => Str::slug(Str::random(70) ),
             "price" => "12",
             "price_regular" => "16"
         ]);
