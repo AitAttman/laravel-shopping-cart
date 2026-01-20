@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
+use Inertia\Response;
 
 class CartsController extends Controller
 {
@@ -22,27 +23,43 @@ class CartsController extends Controller
             Route::get('/', [__CLASS__, 'viewCart'])->name('cart.view');
             Route::post('/', [__CLASS__, 'addItem'])->name('cart.add_item');
             Route::DELETE('/', [__CLASS__, 'deleteItem'])->name('cart.delete_item');
-            Route::post('/checkout', [__CLASS__, 'submitCheckout'])->name('cart.checkout.submit');
-            Route::get('/test', [__CLASS__, 'testCart']);
+        });
+        Route::prefix('checkout')->middleware('auth')->group(function () {
+            Route::get('/', [__CLASS__, 'viewCheckout'])->name('checkout.view');
+            Route::post('/', [__CLASS__, 'submitCheckout'])->name('checkout.post');
         });
     }
-    public function testCart( Request $request ){
-        $cart = self::getCurrentUserCart();
-        dd( $cart );
-    }
     public function viewCart(Request $request){
-        $cart = self::getCurrentUserCart();
-        $result = ['message' => 'There no items in your cart', 'data' => null ];
-        if( $cart ) {
-            $args = [
-                'page' => ait_get_positive_int(  $request->get('page',1) ),
-                'cart_id' => $cart->id
-            ];
-            $itemsData = Cart::cartItems( ...$args );
-            if( $itemsData )
-                $result = $itemsData;
+        $data = ['data' => null ];
+        $user_id = auth()->user()->id;
+        $carts = Cart::queryCarts(...[
+            'user_id' => $user_id,
+            'status' => CartStatus::ACTIVE->value,
+            'limit' => 1,
+            'page' => 1
+        ]);
+        $messageCartEmpty = 'Your cart is empty';
+        if( !$carts ) {
+            $data['message'] = $messageCartEmpty;
+        } else {
+            $cartInfo = $carts['data'][0];
+            $data['meta']['sub_total'] = $cartInfo['sub_total'] ?? 0;
+            $data['meta']['items_count'] = $cartInfo['items_count'] ?? 0;
+            if( empty( $data['meta']['items_count'] ) ) {
+                $data['message'] = $messageCartEmpty;
+            } else {
+                $args = [
+                    'page' => ait_get_positive_int(  $request->get('page',1) ),
+                    'cart_id' => $cartInfo['id'],
+                ];
+                $itemsData = Cart::cartItems( ...$args );
+                if( $itemsData ){
+                    $data['meta'] = array_merge( $data['meta'], $itemsData['meta'] );
+                    $data['data'] = $itemsData['data'];
+                }
+            }
         }
-        return Inertia::render('cart/CartIndex', $result );
+        return Inertia::render('cart/CartIndex', $data );
     }
     /**
      * update or create cart item
@@ -77,7 +94,7 @@ class CartsController extends Controller
             $message = 'Item added to cart successfully';
         else
             $message = 'Item has been updated successfully';
-        return back()->with('flash_message' , $message );
+        return back()->with('flash' , ['message' => $message] );
     }
 
     /**
@@ -93,16 +110,42 @@ class CartsController extends Controller
         if( $cartId && is_int( $productId ) && $productId > 0 )
             $cartItem = CartItem::getItem( $cartId, $productId , ['id'] );
         if( isset( $cartItem ) && $cartItem->delete())
-            return back()->with( ['flash_message' => 'Item deleted successfully'] );
+            return back()->with( ['flash' => ['message' => 'Item deleted successfully' ]] );
         return back()->withErrors( ['message' => 'Item is not the cart yet'] );
     }
+    /**
+     * display checkout page
+     * @param Request $request
+     * @return \Inertia\Response
+     */
+    public function viewCheckout(Request $request ): Response|RedirectResponse{
+        $user_id = auth()->user()?->id;
+        $result = Cart::queryCarts(...[
+            'user_id' => $user_id,
+            'status' => CartStatus::ACTIVE->value,
+            'limit' => 1
+        ]);
+        $response = [];
+        if( $result !== false ){
+            $data = !empty( $result['data'] ) ? $result['data'][0] : null;
+            $response['data'] = $data;
+            $response['meta'] = $result['meta'];
+        }
+        $response['message'] = 'this is a message';
+        return Inertia::render('checkout/CheckoutPage', $response);
+    }
+    /**
+     * when use submits checkout, change cart status to pending and send message back
+     * @param Request $request
+     * @return RedirectResponse
+     */
     public function submitCheckout(Request $request){
         $cart = self::getCurrentUserCart();
         if( !$cart || !Cart::hasItems($cart->id) )
             return back()->withErrors( ['message' => 'Your cart is empty'] );
         $cart->status = CartStatus::PENDING->value;
         $cart->save();
-        return back()->with('flash_message', 'Cart has been submitted successfully');
+        return back()->with('flash', ['message' => 'Cart has been submitted successfully']);
     }
     public static function getCurrentUserCart( array $fields = ['*']):?Cart {
         $userId = auth()->user()?->id;

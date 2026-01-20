@@ -1,4 +1,4 @@
-export default function MessageBox({message , isError = false, className = "p-1", visible = true } : {message: string, isError: boolean, className?: string, visible?: boolean}) {
+export default function MessageBox({message , isError = false, className = "p-1"} : {message: string, isError: boolean, className?: string}) {
     const theClassName = ['text-center']
     if( isError )
         theClassName.push('text-red-500')
@@ -6,7 +6,7 @@ export default function MessageBox({message , isError = false, className = "p-1"
         theClassName.push('text-green-500')
     if( className )
         theClassName.push(className)
-    if( !visible )
+    if( !message )
         return <></>
     return (
         <p className={theClassName.join(' ')}>{message}</p>

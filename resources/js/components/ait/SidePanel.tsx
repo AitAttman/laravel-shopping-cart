@@ -15,7 +15,7 @@ export default function SidePanel({ children, position="start", visible = false,
                  data-position={position} data-visible={visible}>
                 {children}
             </div>
-            <div className="overly bg-zinc-500"
+            <div className="overly bg-black"
                  onClick={onClose}
                  data-visible={visible}></div>
         </>

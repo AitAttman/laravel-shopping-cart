@@ -71,7 +71,7 @@ export default function Index(){
                             price={product.price}
                             priceRegular={product.price_regular}
                             url={product.url || "#"}
-                            thumbnailUrl="http://localhost:8000/images/products/2025/08/croisillon-emballage-gmgr.jpg"
+                            thumbnailUrl={product.thumbnail_url}
                         />
                     )
                 })}

@@ -32,7 +32,9 @@ export default function viewProduct() {
         <PublicLayout>
             <div className="grid max-md:grid-cols-1 min-md:grid-cols-[max(30%,300px)_auto] gap-2 p-2 max-w-[1024px] mx-auto">
                 <div className="max-w-100 rounded-sm overflow-hidden mx-auto aspect-square overflow-hidden flex flex-col align-items-center justify-center">
-                    <img src="http://localhost:8000/images/products/2025/08/iwke-ewek-1.jpg"/>
+                    {page.props.product?.thumbnail_url &&
+                        <img src={page.props.product?.thumbnail_url }/>
+                    }
                 </div>
                 <div className="flex flex-col gap-2">
                     <h1>{page.props.product?.name || ""}</h1>

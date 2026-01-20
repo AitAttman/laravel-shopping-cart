@@ -69,12 +69,13 @@ export default function ProductRow({
         updateItem(value || 1)
     }
     return (
-        <div className="grid gap-2 grid-cols-[100px_auto_40px] theme-bg-1 p-1 rounded">
+        <div className="grid gap-2 grid-cols-[72px_auto_100px] md:grid-cols-[100px_auto_100px] theme-bg-1 p-1 rounded">
             <div className="aspect-square bg-red-300 overflow-hidden rounded">
                 <Link href={url || ""} className="w-full h-full"><img src="/assets/images/car-tire.webp" alt={name}/></Link>
             </div>
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-1">
                 <div><Link href={url || '#'}>{name}</Link></div>
+                <div><b>{price}</b></div>
                 {state.errorMessage &&
                     <p className="text-red-500">{state.errorMessage}</p>
                 }
@@ -82,30 +83,29 @@ export default function ProductRow({
                     <p className="text-green-500">{state.successMessage}</p>
                 }
                 {state.loading && <Spinner />}
+                <div className="self-start flex items-center gap-1">
+                    <div className="flex rounded bg-background">
+                        <button className="button button-transparent"
+                                onClick={() => updateQty( currentQty - 1 )}
+                        >-</button>
+                        <input type="number" value={currentQty}
+                               onChange={(ev: ChangeEvent<HTMLInputElement>) => {
+                                   updateQty( Number(ev.target.value) || 0 )
+                               }}
+                               placeholder="qty" className="focus:outline-0 text-center py-1 max-w-20"/>
+                        <button className="button button-transparent"
+                                onClick={() => updateQty( currentQty + 1 )}
+                        >+</button>
+                    </div>
+                </div>
             </div>
-            <div className="flex flex-col gap-1 items-center">
-                <button className="button button-transparent"
+            <div className="justify-self-end flex flex-col gap-1 items-end">
+                <b className="text-nowrap">$ {Number(price * currentQty).toFixed(2)}</b>
+                <button className="button button-transparent p-0!"
                         onClick={ () => removeItem() }
                 >
-                    <Icon icon="delete" fill="fill-red-500" size={28}/>
+                    <Icon icon="delete" fill="fill-red-500" size={32}/>
                 </button>
-            </div>
-            <div className="flex gap-1 items-center justify-between col-span-3">
-                <div className="flex gap-2 items-center">
-                    <button className="button button-theme"
-                            onClick={() => updateQty( currentQty - 1 )}
-                    >-</button>
-                    <input type="number" value={currentQty}
-                           onChange={(ev: ChangeEvent<HTMLInputElement>) => {
-                               updateQty( Number(ev.target.value) || 0 )
-                           }}
-                           placeholder="qty" className="input py-1 max-w-20"/>
-                    <button className="button button-theme"
-                            onClick={() => updateQty( currentQty + 1 )}
-                    >+</button>
-                    <div className="flex gap-1"><span>x</span><b>{price}</b></div>
-                </div>
-                <div className="px-2"><b>{Number(price * currentQty).toFixed(2)}</b></div>
             </div>
         </div>
     )

@@ -11,12 +11,12 @@ import products from '@/routes/products';
 import cart from '@/routes/cart';
 import cartsController from '@/actions/App/Http/Controllers/CartsController';
 import MessageBox from '@/components/ait/MessageBox';
+import checkout from '@/routes/checkout';
 export default function CartIndex() {
     const page = usePage();
     const [currentPage, setCurrentPage] = useState<number>( page.props.meta?.page as number || 1);
     const [products, setProducts] = useState<CartItemRowType[]>((page.props.data as CartItemRowType[]) || []);
     const [state, setState] = useState<StateType>({loading: false, errorMessage: "", successMessage: ""})
-    const [checkoutState, setCheckoutState] = useState<StateType>({loading: false, errorMessage: "", successMessage: ""})
     const [canLoadMore, setCanLoadMore] = useState<boolean>(true);
     const loadMore = (pageNumber: number ) => {
         router.get(Cart.view().url , {
@@ -32,8 +32,8 @@ export default function CartIndex() {
                     } else {
                         setProducts( prev=> [...prev, ...newProducts])
                     }
-                } else if( page.props.message ) {
-                    setState( p=> ({...p, errorMessage: page.props.message as string }))
+                } else if( page.props.meta?.count ) {
+                    setState( p=> ({...p, errorMessage: 'No more items found' }))
                     setCanLoadMore( false )
                 }
             },
@@ -52,24 +52,6 @@ export default function CartIndex() {
     const onDelete = (productId: number) => {
         setProducts( p => [...p.filter(product => product.product_id !== productId)])
     }
-    const submitCheckout = ()=> {
-        router.post( cart.checkout.submit(), {} , {
-            preserveScroll: true,
-            preserveState: true,
-            onSuccess: (p) => {
-                setProducts([])
-            },
-            onError: (err) => {
-
-            },
-            onStart: () => {
-                setCheckoutState( p=> ({...p, loading: true, errorMessage: "", successMessage: "" }))
-            },
-            onFinish: () => {
-                setCheckoutState( p=> ({...p, loading: false }))
-            }
-        } )
-    }
     return (
         <PublicLayout title="Cart items">
             <h1 className="p-3">Cart Items</h1>
@@ -82,7 +64,7 @@ export default function CartIndex() {
                 </div>
             }
                 <div className="grid grid-cols-1 gap-2 max-w-6xl mx-auto p-2 md:grid-cols-[auto_max(300px,30%)]">
-                    <div className="flex flex-col gap-1">
+                    <div className="flex flex-col gap-1 w-full">
                         {products.length >0 && products.map((p,index) => {
                             return <ProductRow key={index}
                                                product_id={p.product_id}
@@ -120,15 +102,17 @@ export default function CartIndex() {
                     </div>
                     {page.props.meta?.count &&
                         <div className="flex flex-col gap-2">
+                            <div className="flex justify-between">
+                                <span>Number of items</span>
+                                <span className="bg-green-500 px-2 rounded text-white">{page.props.meta.count}</span>
+                            </div>
+                            <hr className="border-zinc-400"/>
+                            <div className="flex justify-between">
+                                <span>Sub-Total</span>
+                                <span>$ {page.props.meta?.sub_total || 'N/A'}</span>
+                            </div>
                             <div className="text-center">
-                                {checkoutState.loading && <Spinner />}
-                                <MessageBox message={checkoutState.errorMessage} isError={true} visible={!!checkoutState.errorMessage} />
-                                <MessageBox message={checkoutState.successMessage} isError={false} visible={!!checkoutState.successMessage} />
-                                <button className="button-success button"
-                                onClick={()=>{
-                                    submitCheckout()
-                                }}
-                                >Finish order</button>
+                                <Link href={checkout.view()} className="button button-success">Checkout</Link>
                             </div>
                         </div>
                     }

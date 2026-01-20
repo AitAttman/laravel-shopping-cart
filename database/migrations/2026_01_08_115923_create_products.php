@@ -19,6 +19,7 @@ return new class extends Migration
             $table->text('snippet' )->nullable();
             $table->longText('content' )->nullable();
             $table->string('slug', 100 )->nullable( false )->unique();
+            $table->string('thumbnail_path', 150 )->nullable( );
             $table->unsignedTinyInteger('status' )->default(1);
             $table->unsignedMediumInteger('stock')->default(0)->nullable( false );
             $table->unsignedMediumInteger('reserved_qty')->default(0)->nullable( false );
