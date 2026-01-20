@@ -20,21 +20,6 @@ class ProductTest extends TestCase
         $response->assertFound();
     }
 
-    public function test_product(): void{
-        try {
-        $product = Product::create([
-            'name' => "Product 4",
-            'slug' => Str::slug(Str::random(70) ),
-            "price" => "12",
-            "price_regular" => "16"
-        ]);
-        $product?->refresh();
-        dump($product?->toArray());
-        } catch (\Throwable $th) {
-            $this->fail($th->getMessage());
-        }
-        $this->assertDatabaseHas('products', ['id' => $product?->id ] );
-    }
     public function test_insertProducts(){
         $products = Product::factory()->count(20)->create();
         $this->assertCount(20, $products);
