@@ -72,6 +72,7 @@ export default function CartIndex() {
                                                name={p.name}
                                                price={p.price}
                                                url={p.url}
+                                               thumbnailUrl={p.thumbnail_url || ""}
                                                onDelete={onDelete}
 
                             />

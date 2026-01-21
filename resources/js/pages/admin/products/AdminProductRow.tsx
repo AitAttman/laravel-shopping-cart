@@ -52,7 +52,7 @@ export default function AdminProductRow({product: p}:AdminProductRowType){
             </div></td>
             <td className="max-w-10 center">{p.status}</td>
             <td className="max-w-10 text-end">{p.price}</td>
-            <td className="max-w-10 text-end">{p.stock}</td>
+            <td className="max-w-10 text-end">{p.stock_quantity}</td>
         </tr>
     )
 }

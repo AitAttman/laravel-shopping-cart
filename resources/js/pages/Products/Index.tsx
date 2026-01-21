@@ -61,7 +61,7 @@ export default function Index(){
     }
     return (
         <PublicLayout>
-            <div className="grid p-2 grid-cols-4 gap-1 max-md:grid-cols-3 max-sm:grid-cols-2">
+            <div className="grid p-2 grid-cols-2 gap-1 md:grid-cols-3 lg:grid-cols-5">
                 {products.map((product: ProductType, index: number) => {
                     return (
                         <ProductCard

@@ -17,7 +17,7 @@ class ProductsController extends Controller
 {
     public static function Routes(): void
     {
-        Route::prefix('admin/products')->group(function () {
+        Route::prefix('admin/products')->middleware('auth.admin')->group(function () {
             Route::get('/', [__CLASS__, 'adminIndex'])->name('products.index');
             Route::post('/', [__CLASS__, 'create'])->name('products.create');
             Route::get('/new', [__CLASS__, 'edit'])->name('products.edit');
@@ -32,28 +32,33 @@ class ProductsController extends Controller
             Route::get('/{slug}', [__CLASS__, 'viewProduct'])->where(['slug' => '^[a-z0-9-_]+$'])->name('product.view');
         });
     }
-    public function moveProductToTrash(Request $request, int $productId){
-        $product = Product::getById( $productId,['id' , 'status']);
-        if( !$product )
+
+    public function moveProductToTrash(Request $request, int $productId)
+    {
+        $product = Product::getById($productId, ['id', 'status']);
+        if (!$product)
             return back()->withErrors(['message' => 'Product does not exist']);
         $product->status = ProductStatus::TRASH->value;
         $product->save();
         return back()->with('flash', ['message' => 'Product moved to trash successfully']);
     }
-    public function productsPublicIndex(Request $request): Response {
-        $page = ait_get_positive_int( $request->get('page', 1) ) ?: 1;
+
+    public function productsPublicIndex(Request $request): Response
+    {
+        $page = ait_get_positive_int($request->get('page', 1)) ?: 1;
         $args = [
             'page' => $page,
-            'limit' => ait_get_positive_int( $request->get('limit', 10) ) ?: 10,
+            'limit' => ait_get_positive_int($request->get('limit', 10)) ?: 10,
             'status' => ProductStatus::PUBLISH->value,
-            'order' => ait_to_string( $request->get('order', 'desc' ) ),
-            'order_by' => ait_to_string( $request->get('order_by', 'id' ) )
+            'order' => ait_to_string($request->get('order', 'desc')),
+            'order_by' => ait_to_string($request->get('order_by', 'id'))
         ];
         $result = Product::queryProducts(...$args);
-        if( !$result )
-            $result = ['message' => $page > 1 ? 'No more products found': 'No products found.'];
-        return Inertia::render('Products/Index', $result );
+        if (!$result)
+            $result = ['message' => $page > 1 ? 'No more products found' : 'No products found.'];
+        return Inertia::render('Products/Index', $result);
     }
+
     public function viewProduct(Request $request, string $slug)
     {
 
@@ -61,48 +66,51 @@ class ProductsController extends Controller
         if (!$product) {
             abort(404, 'Product not found');
         }
+        $product->thumbnail_url = $product->getThumbnailUrl();
+        unset($product->thumbnail_path);
+        unset($product->slug);
 
         return Inertia::render('Products/ViewProduct', ['product' => $product]);
     }
 
-    public function adminIndex(Request $request ): Response
+    public function adminIndex(Request $request): Response
     {
-        $page = ait_get_positive_int( $request->get('page', 1) ) ?: 1;
+        $page = ait_get_positive_int($request->get('page', 1)) ?: 1;
         $args = [
             'page' => $page,
-            'limit' => ait_get_positive_int( $request->get('limit', 10) ) ?: 10,
-            'status' => ait_get_positive_int( $request->get('status', 0) ) ?: 0,
-            'order' => ait_to_string( $request->get('order', 'desc' ) ),
-            'order_by' => ait_to_string( $request->get('order_by', 'id' ) )
+            'limit' => ait_get_positive_int($request->get('limit', 10)) ?: 10,
+            'status' => ait_get_positive_int($request->get('status', 0)) ?: 0,
+            'order' => ait_to_string($request->get('order', 'desc')),
+            'order_by' => ait_to_string($request->get('order_by', 'id'))
         ];
-        if( $search = $request->get('search') ) {
+        if ($search = $request->get('search')) {
             $args['search'] = trim($search) |> strtolower(...);
         }
         $response = [];
         $result = Product::queryProducts(...$args);
-        if( $result ){
+        if ($result) {
             $response = $result;
-            if( empty( $response['data'] ) )
+            if (empty($response['data']))
                 $response['message'] = 'No more items found';
         } else {
             $response['message'] = 'No items found';
         }
-        return Inertia::render('admin/products/Index', $response );
+        return Inertia::render('admin/products/Index', $response);
     }
 
     public function edit(Request $request, int $productId = 0): Response
     {
         $response = [];
-        if( $productId > 0 ){
-            $product = Product::getById( $productId );
-            if( !$product )
+        if ($productId > 0) {
+            $product = Product::getById($productId);
+            if (!$product)
                 $response['error_message'] = 'Product does not exist';
-            else{
+            else {
                 $product->thumbnail_url = $product->getThumbnailUrl();
                 $response['data'] = $product;
             }
         }
-        return Inertia::render('admin/products/EditProduct' , $response );
+        return Inertia::render('admin/products/EditProduct', $response);
     }
 
     /**
@@ -116,7 +124,7 @@ class ProductsController extends Controller
         $product = null;
         if ($productId > 0) {
             $product = Product::getById($productId);
-            if (!$product){
+            if (!$product) {
                 Inertia::flash([
                     'error' => 'Product does not exist.',
                 ]);
@@ -124,7 +132,7 @@ class ProductsController extends Controller
             }
         }
         $inputs = $request->input();
-        if( $request->hasFile('thumbnail_file') ){
+        if ($request->hasFile('thumbnail_file')) {
             $inputs['thumbnail_file'] = $request->file('thumbnail_file');
         }
 
@@ -133,23 +141,23 @@ class ProductsController extends Controller
             return back()->withErrors($validator->errors())->withInput();
         } else {
             $data = $validator->valid();
-            if( !empty( $data['thumbnail_file'] ) ){
-                $originalFileName = pathinfo( $data['thumbnail_file']->getClientOriginalName(), PATHINFO_FILENAME);
+            if (!empty($data['thumbnail_file'])) {
+                $originalFileName = pathinfo($data['thumbnail_file']->getClientOriginalName(), PATHINFO_FILENAME);
                 $extension = $data['thumbnail_file']->getClientOriginalExtension();
                 // check if file already exists and change its name
-                $i=1;
+                $i = 1;
                 $filename = $originalFileName;
-                while(Storage::disk('public')->exists( 'products/' .  $filename . '.' . $extension )){
-                    $filename = $originalFileName. '-' . $i;
+                while (Storage::disk('public')->exists('products/' . $filename . '.' . $extension)) {
+                    $filename = $originalFileName . '-' . $i;
                     $i++;
                 }
                 // save thumbnail file in storage/public/products
-                $publicPath = Storage::disk('public')->putFileAs('products', $data['thumbnail_file'] , $filename . '.' . $extension );
-                if( !$publicPath )
+                $publicPath = Storage::disk('public')->putFileAs('products', $data['thumbnail_file'], $filename . '.' . $extension);
+                if (!$publicPath)
                     return back()->withErrors(['thumbnail_file' => 'Thumbnail file could not be uploaded.']);
                 $data['thumbnail_path'] = $publicPath;
             }
-            if( isset($data['thumbnail_file']) )
+            if (isset($data['thumbnail_file']))
                 unset($data['thumbnail_file']);
             if (!$product && empty($data['slug']))
                 $data['slug'] = Str::slug($data['name']);
@@ -193,15 +201,17 @@ class ProductsController extends Controller
             'snippet' => 'max:200|string|nullable',
             'content' => 'string|nullable',
             'thumbnail_file' => ['file', 'image', 'mimes:jpeg,jpg,png,webp', 'max:2048'],
-            'thumbnail_path' => ['string', 'nullable' , 'max:150'],
+            'thumbnail_path' => ['string', 'nullable', 'max:150'],
             'slug' => 'max:100|string|nullable',
             'price' => implode('|', $rules['price']),
             'price_regular' => 'decimal:0,2|max:10000|nullable',
-            'status' => ['integer','max:2'],
+            'status' => ['integer', 'max:2'],
+            'stock_quantity' => ['integer', 'max:999999999'],
         ], attributes: [
             'name' => 'product name',
             'snippet' => 'Snippet',
             'thumbnail_file' => 'Thumbnail file',
+            'stock_quantity' => 'Stock quantity',
             'content' => 'Content',
             'slug' => 'Product Slug',
             'price' => 'Price',

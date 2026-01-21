@@ -1,19 +1,22 @@
-import Icon from "@/components/ait/Icon"
+import Icon from '@/components/ait/Icon';
 import Spinner from '@/components/ait/Spinner';
 import { ChangeEvent, useRef, useState } from 'react';
 import { CartItemRowType, ProductType, StateType } from '@/types/ait';
-import { Link, router, useForm } from '@inertiajs/react';
+import { Link, router } from '@inertiajs/react';
 import Cart from '@/routes/cart';
-import { deleteItem } from '@/actions/App/Http/Controllers/CartsController';
+import MessageBox from '@/components/ait/MessageBox';
+
 export default function ProductRow({
     product_id,
     name,
     price,
     qty,
     url,
-    onDelete = null
+    onDelete = null,
+    thumbnailUrl = ""
                                    }: CartItemRowType & {
     onDelete?: (productId: number ) => void;
+    thumbnailUrl?: string;
 }) {
     const [product, setProduct] = useState<ProductType>();
     const [currentQty, setCurrentQty] = useState<number|string>( qty );
@@ -29,8 +32,8 @@ export default function ProductRow({
                 },{
                 preserveScroll: true,
                 preserveState: true,
-                onSuccess: (res) => {
-                    setState( p=> ({...p, successMessage: (res.props.flash?.message as string) || ""}))
+                onFlash:( flash ) => {
+                    setState( p=> ({...p, successMessage: flash.message as string || ""}))
                     setTimeout(()=> {
                         setState( p=> ({...p , successMessage: ""}))
                     }, 3000)
@@ -49,7 +52,7 @@ export default function ProductRow({
             preserveState: true,
             data: {product_id: product_id},
             onSuccess: (res) => {
-                setState( p=> ({...p, successMessage:( res.props.flash?.message  as string)|| "" }))
+                setState( p=> ({...p, successMessage:( res.flash?.message  as string)|| "" }))
                 if( onDelete && typeof onDelete === "function" )
                     setTimeout( () => {
                         setState( p=> ({...p, successMessage: "" }))
@@ -71,17 +74,13 @@ export default function ProductRow({
     return (
         <div className="grid gap-2 grid-cols-[72px_auto_100px] md:grid-cols-[100px_auto_100px] theme-bg-1 p-1 rounded">
             <div className="aspect-square bg-red-300 overflow-hidden rounded">
-                <Link href={url || ""} className="w-full h-full"><img src="/assets/images/car-tire.webp" alt={name}/></Link>
+                {thumbnailUrl && <Link href={url || "#"} className="w-full h-full block flex"><img src={thumbnailUrl} alt={name} className="object-cover object-center"/></Link>}
             </div>
             <div className="flex flex-col gap-1">
                 <div><Link href={url || '#'}>{name}</Link></div>
                 <div><b>{price}</b></div>
-                {state.errorMessage &&
-                    <p className="text-red-500">{state.errorMessage}</p>
-                }
-                {state.successMessage &&
-                    <p className="text-green-500">{state.successMessage}</p>
-                }
+                <MessageBox message={state.errorMessage} isError={true} />
+                <MessageBox message={state.successMessage} isError={false} />
                 {state.loading && <Spinner />}
                 <div className="self-start flex items-center gap-1">
                     <div className="flex rounded bg-background">

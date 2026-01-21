@@ -22,6 +22,9 @@ return Application::configure(basePath: dirname(__DIR__))
             HandleInertiaRequests::class,
             AddLinkHeadersForPreloadedAssets::class,
         ]);
+        $middleware->alias([
+            'auth.admin' => \App\Http\Middleware\AuthAdmin::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         // ahmed edit start

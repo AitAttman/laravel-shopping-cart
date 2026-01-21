@@ -1,9 +1,9 @@
 import Spinner from '@/components/ait/Spinner';
-import { ProductType } from '@/types/ait';
-import { JSX, useEffect, useState } from 'react';
-import { Link, router, useForm, usePage } from '@inertiajs/react';
+import { JSX, useState } from 'react';
+import { Link, useForm, usePage } from '@inertiajs/react';
 import CartsController from '@/actions/App/Http/Controllers/CartsController';
 import Icon from '@/components/ait/Icon';
+
 interface ProductCardProps {
     id?: number;
     thumbnailUrl?: string;
@@ -27,11 +27,12 @@ export default function ProductCard({id=0, thumbnailUrl="",url = '#', name="", p
     const [successMessage, setSuccessMessage] = useState<string>("");
     const addItem = () => {
         post( CartsController.addItem().url , {
-            onSuccess : (response) => {
-                setSuccessMessage((response.props.flash?.message as string  ) ||"" )
+            onFlash: (flash) => {
+                setSuccessMessage((flash.message as string  ) ||"" )
                 setTimeout(()=>setSuccessMessage(""), 3000 )
             },
-            preserveScroll:true
+            preserveScroll:true,
+            preserveState:true,
         } )
     }
     return (

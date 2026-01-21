@@ -1,11 +1,11 @@
-import { ReactNode, useEffect, useState } from 'react';
+import { ReactNode, useState } from 'react';
 import { Head, Link, usePage } from '@inertiajs/react';
 import SidePanel from '@/components/ait/SidePanel';
 import Icon from '@/components/ait/Icon';
 import MainLogo from '@/components/ait/MainLogo';
 import products from '@/routes/products';
 import login from '@/routes/login';
-import { register } from '@/routes';
+import { dashboard, register } from '@/routes';
 import cart from '@/routes/cart';
 
 interface AppLayoutProps {
@@ -73,6 +73,13 @@ export default function PublicLayout({children,title = "", ...props}: AppLayoutP
                         <Link href="/" className="py-1 px-2 flex items-center gap-1">
                             <Icon icon="home"/><span>Home</span></Link>
                     </li>
+                    {
+                        page.props.auth?.user &&
+                        <li>
+                            <Link href={dashboard()} className="py-1 px-2 flex items-center gap-1">
+                                <Icon icon="settings"/><span>Dashboard</span></Link>
+                        </li>
+                    }
                     <li>
                         <Link href={products.public.index().url} className="py-1 px-2 flex items-center gap-1">
                             <Icon icon="store"/><span>Products</span></Link>

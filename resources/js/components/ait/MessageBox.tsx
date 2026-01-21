@@ -1,5 +1,5 @@
-export default function MessageBox({message , isError = false, className = "p-1"} : {message: string, isError: boolean, className?: string}) {
-    const theClassName = ['text-center']
+export default function MessageBox({message , isError = false, className = ""} : {message: string, isError: boolean, className?: string}) {
+    const theClassName = []
     if( isError )
         theClassName.push('text-red-500')
     else
