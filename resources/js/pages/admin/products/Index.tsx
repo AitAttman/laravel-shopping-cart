@@ -1,6 +1,6 @@
 import { Head, Link, router, usePage } from '@inertiajs/react';
 import AppLayout from '@/layouts/app-layout';
-import product from '@/routes/product';
+import {default as productsRoutes } from '@/routes/products';
 import Icon from '@/components/ait/Icon'
 import { useEffect, useState } from 'react';
 import { ProductType, StateType } from '@/types/ait';
@@ -9,6 +9,9 @@ import Spinner from '@/components/ait/Spinner';
 import MessageBox from '@/components/ait/MessageBox';
 import ProductsFilters, { ProductFiltersType } from '@/pages/admin/products/ProductsFilters';
 import AdminProductRow from '@/pages/admin/products/AdminProductRow';
+import type { BreadcrumbItem } from '@/types';
+import { dashboard } from '@/routes';
+import admin from '@/routes/admin';
 
 export default function Index(){
     const page = usePage();
@@ -47,13 +50,22 @@ export default function Index(){
             }
         })
     }
-
+    const breadcrumbs: BreadcrumbItem[] = [
+        {
+            title: 'Dashboard',
+            href: dashboard().url,
+        },
+        {
+            title: 'Products',
+            href: productsRoutes.index().url,
+        },
+    ];
     useEffect(() => {
         setCurrentPage( 1 )
         loadmore( 1 )
     }, [filters]);
     return (
-        <AppLayout>
+        <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Dashboard" />
             <div className="flex gap-2 px-2">
                 <button className="button button-theme"

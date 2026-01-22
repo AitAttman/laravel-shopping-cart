@@ -7,6 +7,7 @@ import adminCartsController from '@/actions/App/Http/Controllers/AdminCartsContr
 import CartRow from '@/pages/admin/carts/CartRow';
 import type { BreadcrumbItem } from '@/types';
 import { dashboard } from '@/routes';
+import admin from '@/routes/admin';
 
 export default function CartsIndex() {
     const page = usePage()
@@ -45,7 +46,7 @@ export default function CartsIndex() {
         },
         {
             title: 'Carts',
-            href: '/admin/carts',
+            href: admin.carts.index().url,
         },
     ];
     return (

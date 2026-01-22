@@ -7,6 +7,8 @@ import Spinner from '@/components/ait/Spinner';
 import MessageBox from '@/components/ait/MessageBox';
 import productRoute from '@/routes/product';
 import Products from '@/routes/products';
+import type { BreadcrumbItem } from '@/types';
+import { dashboard } from '@/routes';
 
 type Product = {
     price?: number;
@@ -60,8 +62,22 @@ export default function EditProduct() {
             reader.readAsDataURL(file);
         });
     };
+    const breadcrumbs: BreadcrumbItem[] = [
+        {
+            title: 'Dashboard',
+            href: dashboard().url,
+        },
+        {
+            title: 'Products',
+            href: Products.index().url,
+        },
+        {
+            title: product?.id ? 'Update product':'New Product',
+            href: Products.edit().url,
+        },
+    ];
     return (
-        <AppLayout>
+        <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Dashboard" />
             {page.props.errors.message &&
                 <MessageBox message={page.props.errors.message} isError={true} />}

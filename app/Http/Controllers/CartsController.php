@@ -30,7 +30,12 @@ class CartsController extends Controller
         });
     }
 
-    public function viewCart(Request $request)
+    /**
+     * Display cart items, the user can then change items qty or remove any item from the cart
+     * @param Request $request
+     * @return Response
+     */
+    public function viewCart(Request $request):Response
     {
         $data = ['data' => null];
         $user_id = auth()->user()->id;
@@ -65,7 +70,7 @@ class CartsController extends Controller
     }
 
     /**
-     * update or create cart item
+     * update or create cart item by authenticated user
      * create cart if not exist
      * @param Request $request
      * @return RedirectResponse
@@ -112,9 +117,10 @@ class CartsController extends Controller
     }
 
     /**
-     * validate product id and check if exists
+     * validate cart item info like product_id and qty, before item is saved into db
+     * @return Validator
      */
-    public static function validateCartItem(array $data)
+    public static function validateCartItem(array $data):Validator
     {
         return Validator::make($data, [
             'product_id' => ['required', 'integer', 'gt:0', 'lte:99999999', Rule::exists('products', 'id')->where(function ($query) {

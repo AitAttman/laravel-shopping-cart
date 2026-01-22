@@ -43,9 +43,11 @@ class Transaction extends Model
         $count = (clone $query)->count('transactions.id');
         if (!$count) return false;
         $response = [
-            'page' => $page,
-            'limit' => $limit,
-            'count' => $count,
+            'meta' => [
+                'page' => $page,
+                'limit' => $limit,
+                'count' => $count,
+            ]
         ];
         $offset = ($page - 1) * $limit;
         if (strtolower($order) !== 'asc')

@@ -103,13 +103,6 @@ export default function PublicLayout({children,title = "", ...props}: AppLayoutP
                             </li>
                         </>
                     }
-                    {
-                        page.props?.auth?.user &&
-                        <li>
-                            <Link href="#" className="py-1 px-2 flex items-center gap-1">
-                                <Icon icon="person"/><span>My Account</span></Link>
-                        </li>
-                    }
                 </ul>
             </SidePanel>
         </>

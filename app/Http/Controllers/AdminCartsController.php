@@ -14,11 +14,16 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use Inertia\Response;
 use mysql_xdevapi\Exception;
 
 class AdminCartsController extends CartsController
 {
-    public static function Routes()
+    /**
+     * Routes definitions to manage carts an admin
+     * @return void
+     */
+    public static function Routes():void
     {
         Route::prefix('admin/carts')->middleware('auth.admin')->group(function () {
             Route::get('/', [__CLASS__, 'cartsIndex'])->name('admin.carts.index');
@@ -29,6 +34,12 @@ class AdminCartsController extends CartsController
         });
     }
 
+    /**
+     * Remove carts and its items permanently
+     * @param Request $request
+     * @param int $cartId
+     * @return RedirectResponse
+     */
     public function destroyCart(Request $request, int $cartId): RedirectResponse
     {
         $cart = Cart::find($cartId);
@@ -42,7 +53,7 @@ class AdminCartsController extends CartsController
     }
 
     /**
-     * convert cart into order
+     * convert cart into order, and notify the admin by email if a product quantity is running low
      * @param Request $request
      * @param int $cartId
      * @return RedirectResponse
@@ -102,11 +113,17 @@ class AdminCartsController extends CartsController
         Inertia::flash([
             'data' => $order,
             'message' => 'Order created successfully',
+            'failed_items' => $failedItems
         ]);
         return back();
     }
 
-    public function cartsIndex(Request $request)
+    /**
+     * Display carts in admin dashboard
+     * @param Request $request
+     * @return Response
+     */
+    public function cartsIndex(Request $request):Response
     {
         $result = Cart::queryCarts(...[
             'page' => ait_get_positive_int($request->get('page', 1)),

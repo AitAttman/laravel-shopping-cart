@@ -20,11 +20,14 @@ export default function viewProduct() {
         post( Cart.add_item().url , {
             preserveScroll: true,
             data: data,
-            onSuccess: (p) => {
-                setSuccess( (p.props.flash?.message as string)  || "")
+            onFlash: (flash) => {
+                setSuccess( (flash.message as string)  || "")
                 setTimeout(()=>{
                     setSuccess("")
                 }, 3000)
+            },
+            onSuccess: (p) => {
+
             }
         })
     }

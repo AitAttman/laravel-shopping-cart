@@ -11,6 +11,7 @@ interface ProductCardProps {
     price?: number|string;
     priceRegular?: number|string;
     url?:string;
+    key?:number
     [k:string]: any;
 }
 interface ConfigType{
@@ -43,7 +44,7 @@ export default function ProductCard({id=0, thumbnailUrl="",url = '#', name="", p
                 </Link>
             </div>
             <div>
-                <Link href={url} className="text-xl max-sm:text-sm">{name}</Link>
+                <Link href={url} className="md:text-xl">{name}</Link>
             </div>
             <div className="flex gap-2 items-top">
                 <span className="text-xl">{price}</span>
@@ -63,7 +64,7 @@ export default function ProductCard({id=0, thumbnailUrl="",url = '#', name="", p
                     <div className="flex justify-center">
                         <button className="button button-success flex align-items-center gap-2"
                                 onClick={addItem}
-                        ><span>Add</span><Icon icon="add-shopping-cart" fill="fill-white"/></button>
+                        ><span>Add to cart</span><Icon icon="add-shopping-cart" fill="fill-white"/></button>
                     </div>
                 </>
             }

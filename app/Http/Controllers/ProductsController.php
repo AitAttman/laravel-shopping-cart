@@ -53,10 +53,16 @@ class ProductsController extends Controller
             'order' => ait_to_string($request->get('order', 'desc')),
             'order_by' => ait_to_string($request->get('order_by', 'id'))
         ];
+        $response = [];
         $result = Product::queryProducts(...$args);
-        if (!$result)
-            $result = ['message' => $page > 1 ? 'No more products found' : 'No products found.'];
-        return Inertia::render('Products/Index', $result);
+        if( $result ) {
+            $response = $result;
+            if( !$response['data'] )
+                $response['message'] = 'No more products found';
+        } else {
+                $response['message'] = 'No products found';
+        }
+        return Inertia::render('Products/Index', $response);
     }
 
     public function viewProduct(Request $request, string $slug)
