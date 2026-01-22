@@ -120,7 +120,7 @@ class CartsController extends Controller
      * validate cart item info like product_id and qty, before item is saved into db
      * @return Validator
      */
-    public static function validateCartItem(array $data):Validator
+    public static function validateCartItem(array $data):\Illuminate\Validation\Validator
     {
         return Validator::make($data, [
             'product_id' => ['required', 'integer', 'gt:0', 'lte:99999999', Rule::exists('products', 'id')->where(function ($query) {
