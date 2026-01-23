@@ -41,7 +41,7 @@ export default function Index(){
                 onSuccess: ( response ) => {
                     const newProducts: ProductType[] = (response.props.data as ProductType[] ) || []
                     if( newProducts.length > 0){
-                        if( currentPage === 1 )
+                        if( page === 1 )
                             setProducts( newProducts )
                         else
                             setProducts(p=> ([...p, ...newProducts ]))
@@ -94,7 +94,7 @@ export default function Index(){
                             onClick={() => {
                                 setCurrentPage(1)
                                 setProducts([])
-                                loadMore()
+                                loadMore(1)
                             }}
                     >Reset</button>
             </div>
