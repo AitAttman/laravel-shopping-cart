@@ -75,6 +75,7 @@ class ProductsController extends Controller
         $product->thumbnail_url = $product->getThumbnailUrl();
         unset($product->thumbnail_path);
         unset($product->slug);
+//        dd( $product );
 
         return Inertia::render('Products/ViewProduct', ['product' => $product]);
     }

@@ -100,7 +100,11 @@ class CartsController extends Controller
         // get the product
         $product = Product::getById($productId, ['id', 'stock_quantity']);
         if ($qty > $product->stock_quantity) {
-            return back()->withErrors(['message' => sprintf('Only %d items left', $product->stock_quantity)]);
+            if( $product->stock_quantity === 0 )
+                $message = 'Sorry! This item is out of stock at the moment.';
+            else
+                $message = sprintf('Only %d items available', $product->stock_quantity);
+            return back()->withErrors(['message' => $message ]);
         }
         $product->save();
         $cartItem = CartItem::updateOrCreate(

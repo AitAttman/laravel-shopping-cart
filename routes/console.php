@@ -8,4 +8,4 @@ Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote');
 // sales report
-Schedule::job(new \App\Jobs\SendDailySalesReport())->shouldRepeatNow();
+Schedule::job(new \App\Jobs\SendDailySalesReport())->dailyAt('20:00');

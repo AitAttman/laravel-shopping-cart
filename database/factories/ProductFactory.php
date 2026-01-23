@@ -24,6 +24,7 @@ class ProductFactory extends Factory
             'snippet' => $this->faker->text(150),
             'content' => $this->faker->text(500),
             'status' => 1,
+            'stock_quantity' => 100,
         ];
     }
 }
