@@ -24,7 +24,7 @@ if user role is not admin, in dashboard, items like "products","carts", "transac
 ### Admin email to receive sales reports
 This email is defined in .env file with key: ADMIN_EMAIL
 
-### Screenshots
+## Screenshots
 ### Products Index:
 <div align="center">
 
@@ -34,13 +34,13 @@ This email is defined in .env file with key: ADMIN_EMAIL
 ### Cart:
 <div align="center">
 
-![Products index](./screenshots/screenshot-cart.webp)
+![Cart](./screenshots/screenshot-cart.webp)
 </div>
 
-### List of cart in admin dashboard
+### List of carts in admin dashboard
 <div align="center">
 
-![Products index](./screenshots/screenshot-admin-carts.webp)
+![List of carts in admin dashboard](./screenshots/screenshot-admin-carts.webp)
 </div>
 
 ### List of products in admin dashboard
