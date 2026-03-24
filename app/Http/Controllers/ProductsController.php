@@ -50,17 +50,23 @@ class ProductsController extends Controller
             'page' => $page,
             'limit' => ait_get_positive_int($request->get('limit', 10)) ?: 10,
             'status' => ProductStatus::PUBLISH->value,
-            'order' => ait_to_string($request->get('order', 'desc')),
-            'order_by' => ait_to_string($request->get('order_by', 'id'))
+            'order' => ait_to_string($request->get('order', 'asc')),
+            'order_by' => ait_to_string($request->get('order_by', 'id')),
+            'item_walker' => function (&$item) {
+                if (isset($item['price']))
+                    $item['price'] = ait_format_currency($item['price'], 2, '.', ' ', '$');
+                if (isset($item['price_regular']))
+                    $item['price_regular'] = ait_format_currency($item['price_regular'], 2, '.');
+            }
         ];
         $response = [];
         $result = Product::queryProducts(...$args);
-        if( $result ) {
+        if ($result) {
             $response = $result;
-            if( !$response['data'] )
+            if (!$response['data'])
                 $response['message'] = 'No more products found';
         } else {
-                $response['message'] = 'No products found';
+            $response['message'] = 'No products found';
         }
         return Inertia::render('Products/Index', $response);
     }
@@ -75,7 +81,7 @@ class ProductsController extends Controller
         $product->thumbnail_url = $product->getThumbnailUrl();
         unset($product->thumbnail_path);
         unset($product->slug);
-//        dd( $product );
+        //        dd( $product );
 
         return Inertia::render('Products/ViewProduct', ['product' => $product]);
     }

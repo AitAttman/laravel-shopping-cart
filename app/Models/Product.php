@@ -33,9 +33,9 @@ class Product extends Model
         string $order = 'asc',
         string $order_by = 'id',
         int    $status = 0,
-        string $search = ''
-    ): false|array
-    {
+        string $search = '',
+        callable|null $item_walker = null
+    ): false|array {
         $query = self::query();
         if ($status > 0)
             $query->where('status', $status);
@@ -46,10 +46,13 @@ class Product extends Model
         $count = $countQuery->count();
         if (!$count) return false;
         $offset = ($page - 1) * $limit;
-        $results = $query->select('*')->orderBy($order_by, $order)->skip($offset)->take($limit)->get()?->map(function ($item) {
+        $results = $query->select('*')->orderBy($order_by, $order)->skip($offset)->take($limit)->get()?->map(function ($item) use ($item_walker) {
             $item = $item->toArray();
             $item['url'] = url('products/' . $item['slug']);
             $item['thumbnail_url'] = Product::getProductThumbnailUrl($item['thumbnail_path'] ?? '');
+            if ($item_walker) {
+                $item_walker($item);
+            }
             return $item;
         })?->toArray();
         return ['data' => $results, 'meta' => [

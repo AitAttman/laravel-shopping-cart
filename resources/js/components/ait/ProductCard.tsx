@@ -1,8 +1,8 @@
-import Spinner from '@/components/ait/Spinner';
-import { JSX, useState } from 'react';
-import { Link, useForm, usePage } from '@inertiajs/react';
 import CartsController from '@/actions/App/Http/Controllers/CartsController';
 import Icon from '@/components/ait/Icon';
+import Spinner from '@/components/ait/Spinner';
+import { Link, useForm, usePage } from '@inertiajs/react';
+import { JSX, useState } from 'react';
 
 interface ProductCardProps {
     id?: number;
@@ -24,7 +24,7 @@ interface ConfigType{
 export default function ProductCard({id=0, thumbnailUrl="",url = '#', name="", price="", priceRegular=""}: ProductCardProps): JSX.Element {
     const page = usePage();
     const isAuthenticated : boolean = !!page.props.auth?.user
-    const {post, processing, errors, hasErrors, setData } = useForm<ConfigType>('post' , '', {product_id: id, qty: 1})
+    const {post, processing, errors, hasErrors } = useForm<ConfigType>('post' , '', {product_id: id, qty: 1})
     const [successMessage, setSuccessMessage] = useState<string>("");
     const addItem = () => {
         post( CartsController.addItem().url , {
@@ -37,18 +37,18 @@ export default function ProductCard({id=0, thumbnailUrl="",url = '#', name="", p
         } )
     }
     return (
-        <div className="p-2 rounded-s flex flex-col theme-bg-1">
+        <div className="p-2 rounded flex flex-col gap-1 border-2 border-neutral-300 overflow-hidden">
             <div className="rounded-sm overflow-hidden">
                 <Link href={url} className="w-full h-full">
                     <img src={thumbnailUrl} />
                 </Link>
             </div>
             <div>
-                <Link href={url} className="md:text-xl">{name}</Link>
+                <Link href={url}><h2 className='text-xl'>{name}</h2></Link>
             </div>
             <div className="flex gap-2 items-top">
-                <span className="text-xl">{price}</span>
-                <span className="text-sm line-through">{priceRegular}</span>
+                <span className="text-2xl">{price}</span>
+                <span className="line-through">{priceRegular}</span>
             </div>
             {isAuthenticated &&
                 <>

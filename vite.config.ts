@@ -7,7 +7,7 @@ import { defineConfig } from 'vite';
 export default defineConfig({
     plugins: [
         laravel({
-            input: ['resources/css/app.css', 'resources/js/app.tsx'],
+            input: ['resources/js/app.tsx'],
             ssr: 'resources/js/ssr.tsx',
             refresh: true,
         }),
@@ -25,7 +25,6 @@ export default defineConfig({
         jsx: 'automatic',
     },
     // server: {
-    //     host: 'localhost',
-    //     port: 5173,
-    // }
+        // host: '0.0.0.0',
+    // },
 });

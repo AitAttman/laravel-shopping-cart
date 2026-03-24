@@ -1,10 +1,11 @@
-import PublicLayout from '@/layouts/PublicLayout';
+import IndexProductsFilters from '@/components/ait/IndexProductsFilter';
 import ProductCard from '@/components/ait/ProductCard';
-import { ProductType } from '@/types/ait';
-import { router, useForm, usePage } from '@inertiajs/react';
-import { useEffect, useState } from 'react';
-import Products from '@/routes/products';
 import Spinner from '@/components/ait/Spinner';
+import PublicLayout from '@/layouts/PublicLayout';
+import Products from '@/routes/products';
+import { ProductType } from '@/types/ait';
+import { router, usePage } from '@inertiajs/react';
+import { createContext, Dispatch, SetStateAction, useEffect, useState } from 'react';
 
 type IndexProps = {
     data?: ProductType[];
@@ -14,19 +15,33 @@ type IndexProps = {
     };
         message?:string;
 }
+export type ProductsFilters = {
+    order: string;
+}
+type ProductsIndexContextType = {
+    filters: ProductsFilters,
+    setFilters: Dispatch<SetStateAction<ProductsFilters>>
+}
+export const ProductsIndexContext = createContext<ProductsIndexContextType|null>(null)
+
 export default function Index(){
     const page = usePage<IndexProps>()
     const [products, setProducts] = useState<ProductType[]>(page.props.data || [] )
     const [loadBtnVisible, setLoadBtnVisibility] = useState<boolean>(true)
     const [currentPage, setCurrentPage] = useState<number>(page.props.meta?.page || 1 )
+    const [filters, setFilters] = useState<ProductsFilters>({ order: 'asc'} )
     const [message, setMessage] = useState<string>('')
     const [loading, setLoading] = useState<boolean>(false)
+    const theContext = {
+        filters , setFilters
+    }
     const loadMore = ( page:number = 1) => {
         if( loading ) return;
         setMessage("")
         router.get(Products.public.index().url,
             {
                 page: page,
+                order: filters.order
             },
             {
                 preserveState: true,
@@ -59,9 +74,15 @@ export default function Index(){
             }
             )
     }
+    useEffect(()=>{
+        setCurrentPage(1)
+        loadMore(1)
+    }, [filters.order])
     return (
         <PublicLayout>
-            <div className="grid p-2 grid-cols-2 gap-1 md:grid-cols-3 lg:grid-cols-5">
+            <ProductsIndexContext.Provider value={theContext}>
+                <IndexProductsFilters />
+            <div className="grid p-2 grid-cols-2 gap-2 md:grid-cols-3 lg:grid-cols-5">
                 {products.map((product: ProductType, index: number) => {
                     return (
                         <ProductCard
@@ -90,14 +111,17 @@ export default function Index(){
                             }}
                     >Load more</button>
                 }
-                    <button className="button button-primary"
+                {currentPage > 1 &&
+                    <button className="button button-secondary"
                             onClick={() => {
                                 setCurrentPage(1)
                                 setProducts([])
                                 loadMore(1)
                             }}
-                    >Reset</button>
+                    >First Page</button>
+                    }
             </div>
+</ProductsIndexContext.Provider>
         </PublicLayout>
     )
 }
